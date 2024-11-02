@@ -14,12 +14,16 @@ struct Cli {
 #[derive(Subcommand, Debug)]
 enum Commands {
     Csv {
+        /// 输入文件
         #[arg(short, long)]
-        input: Option<String>,
+        input: String,
+        /// 输入文件
         #[arg(short, long)]
         output: Option<String>,
-        #[arg(short, long, default_value_t = false)]
+        /// 输入文件是否包含csv头部，默认为false
+        #[arg(long, default_value_t = false)]
         header: bool,
+        /// 输入文件列分隔符，默认为","
         #[arg(short, long, default_value_t = String::from(","))]
         delimiter: String,
     },
