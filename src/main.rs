@@ -31,5 +31,17 @@ enum Commands {
 
 fn main() {
     let cli = Cli::parse();
-    println!("{:?}", cli.command);
+    match cli.command {
+        Commands::Csv {
+            input,
+            output,
+            header,
+            delimiter,
+        } => {
+            println!(
+                "input: {}, output: {:?}, header: {}, delimiter: {}",
+                input, output, header, delimiter
+            );
+        }
+    }
 }
