@@ -80,7 +80,7 @@ fn main() -> std::io::Result<()> {
                 .create(true)
                 .truncate(true)
                 .open(output_path)?;
-            serde_json::to_writer_pretty(output_file, &records)?;
+            serde_json::to_writer_pretty(&output_file, &records)?;
 
             println!("{input} -> {output}, Done.");
 
