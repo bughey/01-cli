@@ -15,6 +15,8 @@ pub struct Opts {
 pub enum SubCommand {
     #[command(about = "Show CSV, or convert CSV to other formats")]
     Csv(CsvOpts),
+    #[command(name = "genpass", about = "Generate a random password")]
+    GenPass(GenPassOpts),
 }
 
 #[derive(Parser, Debug)]
@@ -36,20 +38,30 @@ pub struct CsvOpts {
     pub delimiter: char,
 }
 
+#[derive(Parser, Debug)]
+pub struct GenPassOpts {
+    /// 密码长度
+    #[arg(short, long, default_value_t = 16)]
+    pub length: u8,
+    /// 是否包含小写字母
+    #[arg(long, default_value_t = true)]
+    pub lowercase: bool,
+    /// 是否包含大写字母
+    #[arg(long, default_value_t = true)]
+    pub uppercase: bool,
+    /// 是否包含数字
+    #[arg(long, default_value_t = true)]
+    pub number: bool,
+    /// 是否包含特殊字符
+    #[arg(long, default_value_t = true)]
+    pub symbol: bool,
+}
+
 #[derive(Debug, Clone, ValueEnum)]
 pub enum OutputFormat {
     Json,
     Yaml,
 }
-
-/* impl ToString for OutputFormat {
-    fn to_string(&self) -> String {
-        match self {
-            OutputFormat::Json => "json".to_string(),
-            OutputFormat::Yaml => "yaml".to_string(),
-        }
-    }
-} */
 
 impl Display for OutputFormat {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
