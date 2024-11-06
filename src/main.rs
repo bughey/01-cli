@@ -4,8 +4,8 @@ use clap::Parser;
 
 use anyhow::Result;
 use rcli::{
-    opts::{Opts, SubCommand},
-    process::{csv_convert::process_csv, gen_pass::process_genpass},
+    cli::{Opts, SubCommand},
+    process::{base64::process_base64, csv_convert::process_csv, gen_pass::process_genpass},
 };
 
 fn main() -> Result<()> {
@@ -14,6 +14,7 @@ fn main() -> Result<()> {
     match cli.cmd {
         SubCommand::Csv(opts) => process_csv(opts)?,
         SubCommand::GenPass(opts) => process_genpass(opts)?,
+        SubCommand::Base64(subcmd) => process_base64(subcmd)?,
     }
 
     Ok(())
