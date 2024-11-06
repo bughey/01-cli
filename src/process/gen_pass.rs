@@ -1,5 +1,6 @@
 use anyhow::Result;
 use rand::prelude::SliceRandom;
+use zxcvbn::zxcvbn;
 
 use crate::opts::GenPassOpts;
 
@@ -40,7 +41,11 @@ pub fn process_genpass(opts: GenPassOpts) -> Result<()> {
     }
     password.shuffle(&mut rng);
 
-    println!("{:?}", String::from_utf8(password)?);
+    let pwd = String::from_utf8(password)?;
+    println!("{:?}", pwd);
+
+    let estimate = zxcvbn(&pwd, &[]);
+    eprintln!("Password strength {}", estimate.score());
 
     Ok(())
 }
