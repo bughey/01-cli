@@ -7,7 +7,7 @@ use anyhow::Result;
 use csv::ReaderBuilder;
 use serde_json::Value;
 
-use crate::opts::CsvOpts;
+use crate::cli::csv::{CsvOpts, OutputFormat};
 
 pub fn process_csv(opts: CsvOpts) -> Result<()> {
     let CsvOpts {
@@ -60,8 +60,8 @@ pub fn process_csv(opts: CsvOpts) -> Result<()> {
         .open(output_path)?;
 
     match format {
-        crate::opts::OutputFormat::Json => serde_json::to_writer_pretty(&output_file, &records)?,
-        crate::opts::OutputFormat::Yaml => serde_yaml::to_writer(&output_file, &records)?,
+        OutputFormat::Json => serde_json::to_writer_pretty(&output_file, &records)?,
+        OutputFormat::Yaml => serde_yaml::to_writer(&output_file, &records)?,
     }
     // serde_json::to_writer_pretty(&output_file, &records)?;
 
