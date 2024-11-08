@@ -1,6 +1,8 @@
-use std::{fmt::Display, path::Path};
+use std::fmt::Display;
 
 use clap::{Parser, ValueEnum};
+
+use super::verify_input_file;
 
 #[derive(Parser, Debug)]
 pub struct CsvOpts {
@@ -33,13 +35,5 @@ impl Display for OutputFormat {
             OutputFormat::Json => write!(f, "json"),
             OutputFormat::Yaml => write!(f, "yaml"),
         }
-    }
-}
-
-fn verify_input_file(filename: &str) -> Result<String, String> {
-    if Path::new(filename).exists() {
-        Ok(filename.to_string())
-    } else {
-        Err("File not found".to_string())
     }
 }
