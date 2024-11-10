@@ -10,8 +10,6 @@ const NUMBER: &[u8] = b"0123456789";
 const SYMBOL: &[u8] = b"!@#$%^&*_";
 
 pub fn process_genpass(opts: GenPassOpts) -> Result<()> {
-    println!("{:?}", opts);
-
     let mut rng = rand::thread_rng();
     let mut password = Vec::new();
     let mut chars = Vec::new();
@@ -42,7 +40,7 @@ pub fn process_genpass(opts: GenPassOpts) -> Result<()> {
     password.shuffle(&mut rng);
 
     let pwd = String::from_utf8(password)?;
-    println!("{:?}", pwd);
+    print!("{}", pwd);
 
     let estimate = zxcvbn(&pwd, &[]);
     eprintln!("Password strength {}", estimate.score());

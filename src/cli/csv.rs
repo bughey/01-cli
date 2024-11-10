@@ -2,12 +2,12 @@ use std::fmt::Display;
 
 use clap::{Parser, ValueEnum};
 
-use super::verify_input_file;
+use super::verify_file;
 
 #[derive(Parser, Debug)]
 pub struct CsvOpts {
     /// 输入文件
-    #[arg(short, long, value_parser = verify_input_file)]
+    #[arg(short, long, value_parser = verify_file)]
     pub input: String,
     /// 输出文件
     #[arg(short, long)]

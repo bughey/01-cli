@@ -1,9 +1,10 @@
-use std::{fs::File, io::Read};
-
 use anyhow::{Ok, Result};
 use base64::{engine::GeneralPurpose, prelude::*};
 
-use crate::cli::base64::{Base64DecodeOpts, Base64EncodeOpts, Base64Format, Base64SubCommand};
+use crate::{
+    cli::base64::{Base64DecodeOpts, Base64EncodeOpts, Base64Format, Base64SubCommand},
+    utils::read_input,
+};
 
 pub fn process_base64(subcmd: Base64SubCommand) -> Result<()> {
     match subcmd {
@@ -34,17 +35,6 @@ fn process_decode(opts: Base64DecodeOpts) -> Result<()> {
 
     let decoded = engine(opts.format).decode(buf)?;
     println!("decoded: {:?}", String::from_utf8(decoded)?);
-    Ok(())
-}
-
-fn read_input(input: &str, buf: &mut Vec<u8>) -> Result<()> {
-    let mut reader: Box<dyn Read> = if input == "-" {
-        Box::new(std::io::stdin())
-    } else {
-        Box::new(File::open(input)?)
-    };
-
-    reader.read_to_end(buf)?;
     Ok(())
 }
 
