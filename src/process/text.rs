@@ -2,6 +2,7 @@ use std::{fs, io::Read};
 
 use anyhow::Result;
 use base64::prelude::*;
+use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 
 use crate::{
     cli::text::{TextSignFormat, TextSignOpts, TextSubCommand, TextVerifyOpts},
@@ -12,23 +13,23 @@ trait TextSign {
     fn sign(&self, reader: &mut dyn Read) -> Result<Vec<u8>>;
 }
 
-#[allow(dead_code)]
 trait TextVerify {
     fn verify(&self, reader: impl Read, sig: &[u8]) -> Result<bool>;
 }
 
-#[allow(dead_code)]
 struct Blake3 {
     key: [u8; 32],
 }
 
-// struct Ed25519Signer {
-//     key: [u8; 32],
-// }
+#[allow(dead_code)]
+struct Ed25519Signer {
+    key: SigningKey,
+}
 
-// struct Ed25519Verifier {
-//     key: [u8; 32],
-// }
+#[allow(dead_code)]
+struct Ed25519Verifier {
+    key: VerifyingKey,
+}
 
 pub fn process_text(subcmd: TextSubCommand) -> Result<()> {
     match subcmd {
@@ -96,5 +97,24 @@ impl TextVerify for Blake3 {
         let mut buf = Vec::new();
         reader.read_to_end(&mut buf)?;
         Ok(blake3::keyed_hash(&self.key, &buf).as_bytes() == sig)
+    }
+}
+
+impl TextSign for Ed25519Signer {
+    fn sign(&self, reader: &mut dyn Read) -> Result<Vec<u8>> {
+        let mut buf = Vec::new();
+        reader.read_to_end(&mut buf)?;
+        let sig = self.key.sign(&buf);
+        Ok(sig.to_bytes().to_vec())
+    }
+}
+
+impl TextVerify for Ed25519Verifier {
+    fn verify(&self, mut reader: impl Read, sig: &[u8]) -> Result<bool> {
+        let mut buf = Vec::new();
+        reader.read_to_end(&mut buf)?;
+        let sig = Signature::from_bytes(sig.try_into()?);
+        let ret = self.key.verify(&buf, &sig).is_ok();
+        Ok(ret)
     }
 }
