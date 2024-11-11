@@ -3,11 +3,17 @@ use std::{fs, io::Read, path::Path};
 use anyhow::Result;
 use base64::prelude::*;
 use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
+use rand::rngs::OsRng;
 
 use crate::{
-    cli::text::{TextSignFormat, TextSignOpts, TextSubCommand, TextVerifyOpts},
+    cli::{
+        genpass::GenPassOpts,
+        text::{TextKeyGenerateOpts, TextSignFormat, TextSignOpts, TextSubCommand, TextVerifyOpts},
+    },
     utils::get_reader,
 };
+
+use super::gen_pass::process_genpass;
 
 pub trait TextSign {
     fn sign(&self, reader: &mut dyn Read) -> Result<Vec<u8>>;
@@ -21,6 +27,11 @@ pub trait KeyLoader {
     fn load(path: impl AsRef<Path>) -> Result<Self>
     where
         Self: Sized;
+}
+
+pub trait KeyGenerator {
+    // TODO use GAT alternative
+    fn generate() -> Result<Vec<Vec<u8>>>;
 }
 
 pub struct Blake3 {
@@ -91,6 +102,20 @@ impl KeyLoader for Blake3 {
     }
 }
 
+impl KeyGenerator for Blake3 {
+    fn generate() -> Result<Vec<Vec<u8>>> {
+        let key = process_genpass(GenPassOpts {
+            length: 32,
+            uppercase: true,
+            lowercase: true,
+            number: true,
+            symbol: true,
+        })?;
+        let key = vec![key.into_bytes()];
+        Ok(key)
+    }
+}
+
 impl TextSign for Ed25519Signer {
     fn sign(&self, reader: &mut dyn Read) -> Result<Vec<u8>> {
         let mut buf = Vec::new();
@@ -104,6 +129,17 @@ impl KeyLoader for Ed25519Signer {
     fn load(path: impl AsRef<Path>) -> Result<Self> {
         let key = fs::read(path)?;
         Self::try_new(&key)
+    }
+}
+
+impl KeyGenerator for Ed25519Signer {
+    fn generate() -> Result<Vec<Vec<u8>>> {
+        let mut csprng = OsRng;
+        let sk = SigningKey::generate(&mut csprng);
+        let pk = sk.verifying_key();
+        let skey = sk.as_bytes().to_vec();
+        let pkey = pk.as_bytes().to_vec();
+        Ok(vec![skey, pkey])
     }
 }
 
@@ -126,14 +162,46 @@ impl KeyLoader for Ed25519Verifier {
 
 pub fn process_text(subcmd: TextSubCommand) -> Result<()> {
     match subcmd {
-        TextSubCommand::Sign(opts) => process_sign(opts),
-        TextSubCommand::Verify(opts) => process_verify(opts),
+        TextSubCommand::Sign(opts) => {
+            let sig = process_sign(opts)?;
+            println!("\nsigned: {}", sig);
+        }
+        TextSubCommand::Verify(opts) => {
+            let verified = process_verify(opts)?;
+            println!("\nverified: {}", verified);
+        }
+        TextSubCommand::Generate(opts) => {
+            let keys = process_generate(&opts)?;
+
+            match opts.format {
+                TextSignFormat::Blake3 => {
+                    let name = opts.output.join("blake3.txt");
+                    fs::write(name, &keys[0])?;
+                }
+                TextSignFormat::Ed25519 => {
+                    let name = opts.output.join("ed25519");
+                    if !name.exists() {
+                        fs::create_dir_all(&name)?;
+                    }
+                    fs::write(name.join("sk"), &keys[0])?;
+                    fs::write(name.join("pk"), &keys[1])?;
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+fn process_generate(opts: &TextKeyGenerateOpts) -> Result<Vec<Vec<u8>>> {
+    println!("{:?}", opts);
+
+    match opts.format {
+        TextSignFormat::Blake3 => Blake3::generate(),
+        TextSignFormat::Ed25519 => Ed25519Signer::generate(),
     }
 }
 
-fn process_sign(opts: TextSignOpts) -> Result<()> {
-    println!("{:?}", opts);
-
+fn process_sign(opts: TextSignOpts) -> Result<String> {
     let mut reader = get_reader(opts.input.as_str())?;
 
     let signed = match opts.format {
@@ -148,11 +216,10 @@ fn process_sign(opts: TextSignOpts) -> Result<()> {
     };
 
     let signed = BASE64_URL_SAFE_NO_PAD.encode(&signed);
-    println!("\nsigned: {}", signed);
-    Ok(())
+    Ok(signed)
 }
 
-fn process_verify(opts: TextVerifyOpts) -> Result<()> {
+fn process_verify(opts: TextVerifyOpts) -> Result<bool> {
     println!("{:?}", opts);
 
     let reader = get_reader(opts.input.as_str())?;
@@ -168,7 +235,23 @@ fn process_verify(opts: TextVerifyOpts) -> Result<()> {
             verifier.verify(reader, &sig)?
         }
     };
-    println!("\nverified: {}", verified);
 
-    Ok(())
+    Ok(verified)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_ed25519_sign_verify() -> Result<()> {
+        let sk = Ed25519Signer::load("fixtures/ed25519/sk")?;
+        let pk = Ed25519Verifier::load("fixtures/ed25519/pk")?;
+
+        let data = b"hello world";
+        let sig = sk.sign(&mut data.as_ref())?;
+        assert!(pk.verify(data.as_ref(), &sig)?);
+
+        Ok(())
+    }
 }

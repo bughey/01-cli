@@ -1,8 +1,8 @@
-use std::fmt::Display;
+use std::{fmt::Display, path::PathBuf};
 
 use clap::{Parser, ValueEnum};
 
-use super::verify_file;
+use super::{verify_file, verify_path};
 
 #[derive(Parser, Debug)]
 pub enum TextSubCommand {
@@ -10,6 +10,18 @@ pub enum TextSubCommand {
     Sign(TextSignOpts),
     #[command(about = "Verify a text")]
     Verify(TextVerifyOpts),
+    #[command(about = "Generate a new key", alias = "g")]
+    Generate(TextKeyGenerateOpts),
+}
+
+#[derive(Parser, Debug)]
+pub struct TextKeyGenerateOpts {
+    /// 签名算法
+    #[arg(short, long, default_value_t = TextSignFormat::Blake3)]
+    pub format: TextSignFormat,
+    /// 输出文件
+    #[arg(short, long, value_parser = verify_path)]
+    pub output: PathBuf,
 }
 
 #[derive(Parser, Debug)]

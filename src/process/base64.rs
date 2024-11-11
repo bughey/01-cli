@@ -9,33 +9,33 @@ use crate::{
 pub fn process_base64(subcmd: Base64SubCommand) -> Result<()> {
     match subcmd {
         Base64SubCommand::Encode(opts) => {
-            process_encode(opts)?;
+            let encoded = process_encode(opts)?;
+            println!("encoded: {:?}", encoded);
         }
         Base64SubCommand::Decode(opts) => {
-            process_decode(opts)?;
+            let decoded = process_decode(opts)?;
+            println!("decoded: {:?}", String::from_utf8(decoded)?);
         }
     }
     Ok(())
 }
 
-fn process_encode(opts: Base64EncodeOpts) -> Result<()> {
+fn process_encode(opts: Base64EncodeOpts) -> Result<String> {
     let mut buf = Vec::new();
     read_input(&opts.input, &mut buf)?;
-    println!("\ninput: {:?}", String::from_utf8(buf.clone())?);
+    // println!("\ninput: {:?}", String::from_utf8(buf.clone())?);
 
     let encoded = engine(opts.format).encode(buf);
-    println!("encoded: {:?}", encoded);
-    Ok(())
+    Ok(encoded)
 }
 
-fn process_decode(opts: Base64DecodeOpts) -> Result<()> {
+fn process_decode(opts: Base64DecodeOpts) -> Result<Vec<u8>> {
     let mut buf = Vec::new();
     read_input(&opts.input, &mut buf)?;
-    println!("\ninput: {:?}", String::from_utf8(buf.clone())?);
+    // println!("\ninput: {:?}", String::from_utf8(buf.clone())?);
 
     let decoded = engine(opts.format).decode(buf)?;
-    println!("decoded: {:?}", String::from_utf8(decoded)?);
-    Ok(())
+    Ok(decoded)
 }
 
 fn engine(format: Base64Format) -> GeneralPurpose {

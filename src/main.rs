@@ -10,13 +10,20 @@ use rcli::{
         text::process_text,
     },
 };
+use zxcvbn::zxcvbn;
 
 fn main() -> Result<()> {
     let cli = Opts::parse();
 
     match cli.cmd {
         SubCommand::Csv(opts) => process_csv(opts)?,
-        SubCommand::GenPass(opts) => process_genpass(opts)?,
+        SubCommand::GenPass(opts) => {
+            let pwd = process_genpass(opts)?;
+            println!("{}", pwd);
+
+            let estimate = zxcvbn(&pwd, &[]);
+            eprintln!("Password strength {}", estimate.score());
+        }
         SubCommand::Base64(subcmd) => process_base64(subcmd)?,
         SubCommand::Text(subcmd) => process_text(subcmd)?,
     }

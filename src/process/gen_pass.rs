@@ -1,6 +1,5 @@
 use anyhow::Result;
 use rand::prelude::SliceRandom;
-use zxcvbn::zxcvbn;
 
 use crate::cli::genpass::GenPassOpts;
 
@@ -9,7 +8,7 @@ const LOWER: &[u8] = b"abcdefghijkmnopqrstuvwxyz";
 const NUMBER: &[u8] = b"0123456789";
 const SYMBOL: &[u8] = b"!@#$%^&*_";
 
-pub fn process_genpass(opts: GenPassOpts) -> Result<()> {
+pub fn process_genpass(opts: GenPassOpts) -> Result<String> {
     let mut rng = rand::thread_rng();
     let mut password = Vec::new();
     let mut chars = Vec::new();
@@ -40,10 +39,6 @@ pub fn process_genpass(opts: GenPassOpts) -> Result<()> {
     password.shuffle(&mut rng);
 
     let pwd = String::from_utf8(password)?;
-    print!("{}", pwd);
 
-    let estimate = zxcvbn(&pwd, &[]);
-    eprintln!("Password strength {}", estimate.score());
-
-    Ok(())
+    Ok(pwd)
 }

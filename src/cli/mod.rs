@@ -3,7 +3,7 @@ pub mod csv;
 pub mod genpass;
 pub mod text;
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use anyhow::Result;
 use base64::Base64SubCommand;
@@ -38,6 +38,15 @@ fn verify_file(filename: &str) -> Result<String, String> {
         Ok(filename.to_string())
     } else {
         Err("File not found".to_string())
+    }
+}
+
+fn verify_path(path: &str) -> Result<PathBuf, String> {
+    let p = Path::new(path);
+    if p.exists() && p.is_dir() {
+        Ok(p.into())
+    } else {
+        Err("Path not found".to_string())
     }
 }
 
