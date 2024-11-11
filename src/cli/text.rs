@@ -10,7 +10,7 @@ pub enum TextSubCommand {
     Sign(TextSignOpts),
     #[command(about = "Verify a text")]
     Verify(TextVerifyOpts),
-    #[command(about = "Generate a new key", alias = "g")]
+    #[command(about = "[g] Generate a new key", alias = "g")]
     Generate(TextKeyGenerateOpts),
 }
 
@@ -33,7 +33,7 @@ pub struct TextSignOpts {
     #[arg(short, long, value_parser = verify_file)]
     pub key: String,
     /// 签名算法
-    #[arg(long, default_value_t = TextSignFormat::Blake3)]
+    #[arg(short, long, default_value_t = TextSignFormat::Blake3)]
     pub format: TextSignFormat,
 }
 
@@ -46,7 +46,7 @@ pub struct TextVerifyOpts {
     #[arg(short, long, value_parser = verify_file)]
     pub key: String,
     /// 签名算法
-    #[arg(long, default_value_t = TextSignFormat::Blake3)]
+    #[arg(short, long, default_value_t = TextSignFormat::Blake3)]
     pub format: TextSignFormat,
     /// 签名
     #[arg(short, long)]
