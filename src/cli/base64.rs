@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use clap::{Parser, ValueEnum};
 
-use super::verify_input_file;
+use super::verify_file;
 
 #[derive(Parser, Debug)]
 pub enum Base64SubCommand {
@@ -15,7 +15,7 @@ pub enum Base64SubCommand {
 #[derive(Parser, Debug)]
 pub struct Base64EncodeOpts {
     /// 输入字符串
-    #[arg(short, long, value_parser = verify_input_file, default_value = "-")]
+    #[arg(short, long, value_parser = verify_file, default_value = "-")]
     pub input: String,
     /// 输出格式
     #[arg(long, default_value_t = Base64Format::Standard)]
@@ -25,7 +25,7 @@ pub struct Base64EncodeOpts {
 #[derive(Parser, Debug)]
 pub struct Base64DecodeOpts {
     /// 输入字符串
-    #[arg(short, long, value_parser = verify_input_file, default_value = "-")]
+    #[arg(short, long, value_parser = verify_file, default_value = "-")]
     pub input: String,
     /// 输出格式
     #[arg(long, default_value_t = Base64Format::Standard)]
