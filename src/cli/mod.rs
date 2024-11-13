@@ -1,6 +1,7 @@
 pub mod base64;
 pub mod csv;
 pub mod genpass;
+pub mod http;
 pub mod text;
 
 use std::path::{Path, PathBuf};
@@ -10,6 +11,7 @@ use base64::Base64SubCommand;
 use clap::Parser;
 use csv::CsvOpts;
 use genpass::GenPassOpts;
+use http::HttpSubCommand;
 use text::TextSubCommand;
 
 // rcli csv -i input.csv -o output.json --header -d ','
@@ -31,6 +33,8 @@ pub enum SubCommand {
     Base64(Base64SubCommand),
     #[command(subcommand, about = "Sign or verify a text")]
     Text(TextSubCommand),
+    #[command(subcommand, about = "Http server")]
+    Http(HttpSubCommand),
 }
 
 fn verify_file(filename: &str) -> Result<String, String> {
