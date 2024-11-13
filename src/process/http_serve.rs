@@ -57,10 +57,13 @@ async fn file_handler(
     }
 
     match fs::read(p).await {
-        Ok(content) => (
-            StatusCode::OK,
-            String::from_utf8_lossy(&content).to_string(),
-        ),
+        Ok(content) => {
+            info!("Read {} bytes", content.len());
+            (
+                StatusCode::OK,
+                String::from_utf8_lossy(&content).to_string(),
+            )
+        }
         Err(e) => {
             warn!("Error reading file: {}", e);
             (StatusCode::INTERNAL_SERVER_ERROR, format!("Error: {}", e))
