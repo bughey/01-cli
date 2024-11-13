@@ -4,9 +4,9 @@ use anyhow::Result;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
-    routing::get,
 };
 use tokio::{fs, net::TcpListener};
+use tower_http::services::ServeDir;
 use tracing::{info, warn};
 
 use crate::cli::http::HttpSubCommand;
@@ -29,11 +29,14 @@ async fn process_http_serve(path: PathBuf, port: u16) -> Result<()> {
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     info!("Direct {:?} Serve on {}", path, addr);
 
-    let state = HttpServeState { path };
+    let state = HttpServeState { path: path.clone() };
+
+    let dirsrv = ServeDir::new(path);
 
     // axum router
     let router = axum::Router::new()
-        .route("/*path", get(file_handler))
+        // .route("/*path", get(file_handler))
+        .nest_service("/", dirsrv)
         .with_state(Arc::new(state));
 
     let listener = TcpListener::bind(addr).await?;
@@ -42,6 +45,7 @@ async fn process_http_serve(path: PathBuf, port: u16) -> Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 async fn file_handler(
     State(state): State<Arc<HttpServeState>>,
     Path(path): Path<String>,
