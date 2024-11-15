@@ -4,6 +4,8 @@ use anyhow::Result;
 use clap::Parser;
 use enum_dispatch::enum_dispatch;
 
+use crate::process::http_serve::process_http_serve;
+
 use super::{verify_path, Processor};
 
 #[enum_dispatch(Processor)]
@@ -24,7 +26,7 @@ pub struct HttpServeOpts {
 }
 
 impl Processor for HttpServeOpts {
-    fn process(self) -> Result<()> {
-        todo!()
+    async fn process(self) -> Result<()> {
+        process_http_serve(self.dir, self.port).await
     }
 }

@@ -7,10 +7,7 @@ use anyhow::Result;
 #[allow(unused_imports)]
 use rcli::{
     cli::{Opts, Processor, SubCommand},
-    process::{
-        csv_convert::process_csv, gen_pass::process_genpass, http_serve::process_http,
-        text::process_text,
-    },
+    process::{csv_convert::process_csv, gen_pass::process_genpass},
 };
 #[allow(unused_imports)]
 use zxcvbn::zxcvbn;
@@ -21,10 +18,7 @@ async fn main() -> Result<()> {
 
     let cli = Opts::parse();
 
-    /* let p = SubCommand::from(cli.cmd);
-    p.process() */
-
-    cli.cmd.process()
+    cli.cmd.process().await
 
     /* match cli.cmd {
         SubCommand::Csv(opts) => process_csv(opts)?,

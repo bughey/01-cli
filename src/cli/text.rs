@@ -1,8 +1,10 @@
-use std::{fmt::Display, path::PathBuf};
+use std::{fmt::Display, fs, path::PathBuf};
 
 use anyhow::Result;
 use clap::{Parser, ValueEnum};
 use enum_dispatch::enum_dispatch;
+
+use crate::process::text::{process_generate, process_sign, process_verify};
 
 use super::{verify_file, verify_path, Processor};
 
@@ -72,19 +74,40 @@ impl Display for TextSignFormat {
 }
 
 impl Processor for TextSignOpts {
-    fn process(self) -> Result<()> {
-        todo!()
+    async fn process(self) -> Result<()> {
+        let sig = process_sign(self)?;
+        println!("\nsigned: {}", sig);
+        Ok(())
     }
 }
 
 impl Processor for TextVerifyOpts {
-    fn process(self) -> Result<()> {
-        todo!()
+    async fn process(self) -> Result<()> {
+        let verified = process_verify(self)?;
+        println!("\nverified: {}", verified);
+        Ok(())
     }
 }
 
 impl Processor for TextKeyGenerateOpts {
-    fn process(self) -> Result<()> {
-        todo!()
+    async fn process(self) -> Result<()> {
+        let keys = process_generate(&self)?;
+
+        match self.format {
+            TextSignFormat::Blake3 => {
+                let name = self.output.join("blake3.txt");
+                fs::write(name, &keys[0])?;
+            }
+            TextSignFormat::Ed25519 => {
+                let name = self.output.join("ed25519");
+                if !name.exists() {
+                    fs::create_dir_all(&name)?;
+                }
+                fs::write(name.join("sk"), &keys[0])?;
+                fs::write(name.join("pk"), &keys[1])?;
+            }
+        }
+
+        Ok(())
     }
 }

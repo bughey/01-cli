@@ -26,7 +26,7 @@ pub struct GenPassOpts {
 }
 
 impl Processor for GenPassOpts {
-    fn process(self) -> Result<()> {
+    async fn process(self) -> Result<()> {
         let pwd = process_genpass(self)?;
         println!("{}", pwd);
 

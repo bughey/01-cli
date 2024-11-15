@@ -42,7 +42,7 @@ impl Display for OutputFormat {
 }
 
 impl Processor for CsvOpts {
-    fn process(self) -> Result<()> {
+    async fn process(self) -> Result<()> {
         process_csv(self)
     }
 }

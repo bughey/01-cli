@@ -24,9 +24,10 @@ use crate::cli::text::TextVerifyOpts;
 
 // rcli csv -i input.csv -o output.json --header -d ','
 
+#[allow(async_fn_in_trait)]
 #[enum_dispatch]
 pub trait Processor {
-    fn process(self) -> Result<()>;
+    async fn process(self) -> Result<()>;
 }
 
 #[derive(Parser, Debug)]
