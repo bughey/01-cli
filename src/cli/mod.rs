@@ -10,11 +10,25 @@ use anyhow::Result;
 use base64::Base64SubCommand;
 use clap::Parser;
 use csv::CsvOpts;
+use enum_dispatch::enum_dispatch;
 use genpass::GenPassOpts;
 use http::HttpSubCommand;
 use text::TextSubCommand;
 
+use crate::cli::base64::Base64DecodeOpts;
+use crate::cli::base64::Base64EncodeOpts;
+use crate::cli::http::HttpServeOpts;
+use crate::cli::text::TextKeyGenerateOpts;
+use crate::cli::text::TextSignOpts;
+use crate::cli::text::TextVerifyOpts;
+
 // rcli csv -i input.csv -o output.json --header -d ','
+
+#[allow(async_fn_in_trait)]
+#[enum_dispatch]
+pub trait Processor {
+    async fn process(self) -> Result<()>;
+}
 
 #[derive(Parser, Debug)]
 #[command(name = "rcli", version, author, about, long_about=None)]
@@ -23,6 +37,7 @@ pub struct Opts {
     pub cmd: SubCommand,
 }
 
+#[enum_dispatch(Processor)]
 #[derive(Parser, Debug)]
 pub enum SubCommand {
     #[command(about = "Show CSV, or convert CSV to other formats")]

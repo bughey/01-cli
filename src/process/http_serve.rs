@@ -9,23 +9,21 @@ use tokio::{fs, net::TcpListener};
 use tower_http::services::ServeDir;
 use tracing::{info, warn};
 
-use crate::cli::http::HttpSubCommand;
-
 #[derive(Debug)]
 struct HttpServeState {
     path: PathBuf,
 }
 
-pub async fn process_http(subcmd: HttpSubCommand) -> Result<()> {
+/* pub async fn process_http(subcmd: HttpSubCommand) -> Result<()> {
     match subcmd {
         HttpSubCommand::Serve(opts) => {
             process_http_serve(opts.dir, opts.port).await?;
         }
     }
     Ok(())
-}
+} */
 
-async fn process_http_serve(path: PathBuf, port: u16) -> Result<()> {
+pub async fn process_http_serve(path: PathBuf, port: u16) -> Result<()> {
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     info!("Direct {:?} Serve on {}", path, addr);
 

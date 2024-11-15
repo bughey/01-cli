@@ -1,8 +1,11 @@
 use std::fmt::Display;
 
+use anyhow::Result;
 use clap::{Parser, ValueEnum};
 
-use super::verify_file;
+use crate::process::csv_convert::process_csv;
+
+use super::{verify_file, Processor};
 
 #[derive(Parser, Debug)]
 pub struct CsvOpts {
@@ -35,5 +38,11 @@ impl Display for OutputFormat {
             OutputFormat::Json => write!(f, "json"),
             OutputFormat::Yaml => write!(f, "yaml"),
         }
+    }
+}
+
+impl Processor for CsvOpts {
+    async fn process(self) -> Result<()> {
+        process_csv(self)
     }
 }

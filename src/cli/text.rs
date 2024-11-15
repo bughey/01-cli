@@ -1,9 +1,14 @@
-use std::{fmt::Display, path::PathBuf};
+use std::{fmt::Display, fs, path::PathBuf};
 
+use anyhow::Result;
 use clap::{Parser, ValueEnum};
+use enum_dispatch::enum_dispatch;
 
-use super::{verify_file, verify_path};
+use crate::process::text::{process_generate, process_sign, process_verify};
 
+use super::{verify_file, verify_path, Processor};
+
+#[enum_dispatch(Processor)]
 #[derive(Parser, Debug)]
 pub enum TextSubCommand {
     #[command(about = "Sign a text with a secret/shared key")]
@@ -65,5 +70,44 @@ impl Display for TextSignFormat {
             TextSignFormat::Blake3 => write!(f, "blake3"),
             TextSignFormat::Ed25519 => write!(f, "ed25519"),
         }
+    }
+}
+
+impl Processor for TextSignOpts {
+    async fn process(self) -> Result<()> {
+        let sig = process_sign(self)?;
+        println!("\nsigned: {}", sig);
+        Ok(())
+    }
+}
+
+impl Processor for TextVerifyOpts {
+    async fn process(self) -> Result<()> {
+        let verified = process_verify(self)?;
+        println!("\nverified: {}", verified);
+        Ok(())
+    }
+}
+
+impl Processor for TextKeyGenerateOpts {
+    async fn process(self) -> Result<()> {
+        let keys = process_generate(&self)?;
+
+        match self.format {
+            TextSignFormat::Blake3 => {
+                let name = self.output.join("blake3.txt");
+                fs::write(name, &keys[0])?;
+            }
+            TextSignFormat::Ed25519 => {
+                let name = self.output.join("ed25519");
+                if !name.exists() {
+                    fs::create_dir_all(&name)?;
+                }
+                fs::write(name.join("sk"), &keys[0])?;
+                fs::write(name.join("pk"), &keys[1])?;
+            }
+        }
+
+        Ok(())
     }
 }

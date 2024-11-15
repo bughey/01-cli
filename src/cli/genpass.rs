@@ -1,4 +1,10 @@
+use anyhow::Result;
 use clap::Parser;
+use zxcvbn::zxcvbn;
+
+use crate::process::gen_pass::process_genpass;
+
+use super::Processor;
 
 #[derive(Parser, Debug)]
 pub struct GenPassOpts {
@@ -17,4 +23,15 @@ pub struct GenPassOpts {
     /// 是否包含特殊字符
     #[arg(long, default_value_t = true)]
     pub symbol: bool,
+}
+
+impl Processor for GenPassOpts {
+    async fn process(self) -> Result<()> {
+        let pwd = process_genpass(self)?;
+        println!("{}", pwd);
+
+        let estimate = zxcvbn(&pwd, &[]);
+        eprintln!("Password strength {}", estimate.score());
+        Ok(())
+    }
 }

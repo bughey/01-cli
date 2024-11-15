@@ -8,7 +8,7 @@ use rand::rngs::OsRng;
 use crate::{
     cli::{
         genpass::GenPassOpts,
-        text::{TextKeyGenerateOpts, TextSignFormat, TextSignOpts, TextSubCommand, TextVerifyOpts},
+        text::{TextKeyGenerateOpts, TextSignFormat, TextSignOpts, TextVerifyOpts},
     },
     utils::get_reader,
 };
@@ -160,7 +160,7 @@ impl KeyLoader for Ed25519Verifier {
     }
 }
 
-pub fn process_text(subcmd: TextSubCommand) -> Result<()> {
+/* pub fn process_text(subcmd: TextSubCommand) -> Result<()> {
     match subcmd {
         TextSubCommand::Sign(opts) => {
             let sig = process_sign(opts)?;
@@ -190,9 +190,9 @@ pub fn process_text(subcmd: TextSubCommand) -> Result<()> {
         }
     }
     Ok(())
-}
+} */
 
-fn process_generate(opts: &TextKeyGenerateOpts) -> Result<Vec<Vec<u8>>> {
+pub fn process_generate(opts: &TextKeyGenerateOpts) -> Result<Vec<Vec<u8>>> {
     println!("{:?}", opts);
 
     match opts.format {
@@ -201,7 +201,7 @@ fn process_generate(opts: &TextKeyGenerateOpts) -> Result<Vec<Vec<u8>>> {
     }
 }
 
-fn process_sign(opts: TextSignOpts) -> Result<String> {
+pub fn process_sign(opts: TextSignOpts) -> Result<String> {
     let mut reader = get_reader(opts.input.as_str())?;
 
     let signed = match opts.format {
@@ -219,7 +219,7 @@ fn process_sign(opts: TextSignOpts) -> Result<String> {
     Ok(signed)
 }
 
-fn process_verify(opts: TextVerifyOpts) -> Result<bool> {
+pub fn process_verify(opts: TextVerifyOpts) -> Result<bool> {
     println!("{:?}", opts);
 
     let reader = get_reader(opts.input.as_str())?;

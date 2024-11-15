@@ -33,15 +33,6 @@ pub fn process_csv(opts: CsvOpts) -> Result<()> {
     let headers = reader.headers()?.clone();
 
     // read records
-    /* let mut records: Vec<BTreeMap<String, String>> = Vec::new();
-    for result in reader.records() {
-        let record = result?;
-        let mut row = BTreeMap::new();
-        for (i, header) in headers.iter().enumerate() {
-            row.insert(header.to_string(), record.get(i).unwrap().to_string());
-        }
-        records.push(row);
-    } */
     let mut records = Vec::with_capacity(128);
     for result in reader.records() {
         let record = result?;
