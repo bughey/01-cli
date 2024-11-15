@@ -4,9 +4,9 @@ use anyhow::Result;
 use clap::Parser;
 use enum_dispatch::enum_dispatch;
 
-use crate::process::http_serve::process_http_serve;
+use crate::{process::http_serve::process_http_serve, Processor};
 
-use super::{verify_path, Processor};
+use super::verify_path;
 
 #[enum_dispatch(Processor)]
 #[derive(Parser, Debug)]

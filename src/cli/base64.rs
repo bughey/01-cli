@@ -4,9 +4,12 @@ use anyhow::Result;
 use clap::{Parser, ValueEnum};
 use enum_dispatch::enum_dispatch;
 
-use crate::process::base64::{process_decode, process_encode};
+use crate::{
+    process::base64::{process_decode, process_encode},
+    Processor,
+};
 
-use super::{verify_file, Processor};
+use super::verify_file;
 
 #[enum_dispatch(Processor)]
 #[derive(Parser, Debug)]

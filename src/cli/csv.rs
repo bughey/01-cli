@@ -3,9 +3,9 @@ use std::fmt::Display;
 use anyhow::Result;
 use clap::{Parser, ValueEnum};
 
-use crate::process::csv_convert::process_csv;
+use crate::{process::csv_convert::process_csv, Processor};
 
-use super::{verify_file, Processor};
+use super::verify_file;
 
 #[derive(Parser, Debug)]
 pub struct CsvOpts {

@@ -4,9 +4,10 @@ use clap::Parser;
 
 use anyhow::Result;
 
+use rcli::Processor;
 #[allow(unused_imports)]
 use rcli::{
-    cli::{Opts, Processor, SubCommand},
+    cli::{Opts, SubCommand},
     process::{csv_convert::process_csv, gen_pass::process_genpass},
 };
 #[allow(unused_imports)]

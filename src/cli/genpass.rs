@@ -2,9 +2,7 @@ use anyhow::Result;
 use clap::Parser;
 use zxcvbn::zxcvbn;
 
-use crate::process::gen_pass::process_genpass;
-
-use super::Processor;
+use crate::{process::gen_pass::process_genpass, Processor};
 
 #[derive(Parser, Debug)]
 pub struct GenPassOpts {
