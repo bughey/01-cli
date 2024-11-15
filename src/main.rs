@@ -3,13 +3,16 @@
 use clap::Parser;
 
 use anyhow::Result;
+
+#[allow(unused_imports)]
 use rcli::{
-    cli::{Opts, SubCommand},
+    cli::{Opts, Processor, SubCommand},
     process::{
-        base64::process_base64, csv_convert::process_csv, gen_pass::process_genpass,
-        http_serve::process_http, text::process_text,
+        csv_convert::process_csv, gen_pass::process_genpass, http_serve::process_http,
+        text::process_text,
     },
 };
+#[allow(unused_imports)]
 use zxcvbn::zxcvbn;
 
 #[tokio::main]
@@ -18,7 +21,12 @@ async fn main() -> Result<()> {
 
     let cli = Opts::parse();
 
-    match cli.cmd {
+    /* let p = SubCommand::from(cli.cmd);
+    p.process() */
+
+    cli.cmd.process()
+
+    /* match cli.cmd {
         SubCommand::Csv(opts) => process_csv(opts)?,
         SubCommand::GenPass(opts) => {
             let pwd = process_genpass(opts)?;
@@ -32,5 +40,5 @@ async fn main() -> Result<()> {
         SubCommand::Http(subcmd) => process_http(subcmd).await?,
     }
 
-    Ok(())
+    Ok(()) */
 }

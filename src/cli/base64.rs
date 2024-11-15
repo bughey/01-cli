@@ -1,9 +1,14 @@
 use std::fmt::Display;
 
+use anyhow::Result;
 use clap::{Parser, ValueEnum};
+use enum_dispatch::enum_dispatch;
 
-use super::verify_file;
+use crate::process::base64::{process_decode, process_encode};
 
+use super::{verify_file, Processor};
+
+#[enum_dispatch(Processor)]
 #[derive(Parser, Debug)]
 pub enum Base64SubCommand {
     #[command(about = "Encode a string to base64")]
@@ -44,5 +49,21 @@ impl Display for Base64Format {
             Base64Format::Standard => write!(f, "standard"),
             Base64Format::Urlsafe => write!(f, "urlsafe"),
         }
+    }
+}
+
+impl Processor for Base64EncodeOpts {
+    fn process(&self) -> Result<()> {
+        let encoded = process_encode(self)?;
+        println!("\nencoded: {}", encoded);
+        Ok(())
+    }
+}
+
+impl Processor for Base64DecodeOpts {
+    fn process(&self) -> Result<()> {
+        let decoded = process_decode(self)?;
+        println!("\ndecoded: {}", String::from_utf8(decoded)?);
+        Ok(())
     }
 }

@@ -1,4 +1,7 @@
+use anyhow::Result;
 use clap::Parser;
+
+use super::Processor;
 
 #[derive(Parser, Debug)]
 pub struct GenPassOpts {
@@ -17,4 +20,10 @@ pub struct GenPassOpts {
     /// 是否包含特殊字符
     #[arg(long, default_value_t = true)]
     pub symbol: bool,
+}
+
+impl Processor for GenPassOpts {
+    fn process(&self) -> Result<()> {
+        todo!()
+    }
 }

@@ -1,9 +1,12 @@
 use std::{fmt::Display, path::PathBuf};
 
+use anyhow::Result;
 use clap::{Parser, ValueEnum};
+use enum_dispatch::enum_dispatch;
 
-use super::{verify_file, verify_path};
+use super::{verify_file, verify_path, Processor};
 
+#[enum_dispatch(Processor)]
 #[derive(Parser, Debug)]
 pub enum TextSubCommand {
     #[command(about = "Sign a text with a secret/shared key")]
@@ -65,5 +68,23 @@ impl Display for TextSignFormat {
             TextSignFormat::Blake3 => write!(f, "blake3"),
             TextSignFormat::Ed25519 => write!(f, "ed25519"),
         }
+    }
+}
+
+impl Processor for TextSignOpts {
+    fn process(&self) -> Result<()> {
+        todo!()
+    }
+}
+
+impl Processor for TextVerifyOpts {
+    fn process(&self) -> Result<()> {
+        todo!()
+    }
+}
+
+impl Processor for TextKeyGenerateOpts {
+    fn process(&self) -> Result<()> {
+        todo!()
     }
 }
