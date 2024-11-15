@@ -3,6 +3,8 @@ use std::fmt::Display;
 use anyhow::Result;
 use clap::{Parser, ValueEnum};
 
+use crate::process::csv_convert::process_csv;
+
 use super::{verify_file, Processor};
 
 #[derive(Parser, Debug)]
@@ -40,7 +42,7 @@ impl Display for OutputFormat {
 }
 
 impl Processor for CsvOpts {
-    fn process(&self) -> Result<()> {
-        todo!()
+    fn process(self) -> Result<()> {
+        process_csv(self)
     }
 }

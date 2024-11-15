@@ -53,7 +53,7 @@ impl Display for Base64Format {
 }
 
 impl Processor for Base64EncodeOpts {
-    fn process(&self) -> Result<()> {
+    fn process(self) -> Result<()> {
         let encoded = process_encode(self)?;
         println!("\nencoded: {}", encoded);
         Ok(())
@@ -61,7 +61,7 @@ impl Processor for Base64EncodeOpts {
 }
 
 impl Processor for Base64DecodeOpts {
-    fn process(&self) -> Result<()> {
+    fn process(self) -> Result<()> {
         let decoded = process_decode(self)?;
         println!("\ndecoded: {}", String::from_utf8(decoded)?);
         Ok(())

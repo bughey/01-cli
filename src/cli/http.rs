@@ -24,7 +24,7 @@ pub struct HttpServeOpts {
 }
 
 impl Processor for HttpServeOpts {
-    fn process(&self) -> Result<()> {
+    fn process(self) -> Result<()> {
         todo!()
     }
 }

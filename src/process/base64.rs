@@ -20,7 +20,7 @@ use crate::{
     Ok(())
 } */
 
-pub fn process_encode(opts: &Base64EncodeOpts) -> Result<String> {
+pub fn process_encode(opts: Base64EncodeOpts) -> Result<String> {
     let mut buf = Vec::new();
     read_input(&opts.input, &mut buf)?;
     // println!("\ninput: {:?}", String::from_utf8(buf.clone())?);
@@ -29,7 +29,7 @@ pub fn process_encode(opts: &Base64EncodeOpts) -> Result<String> {
     Ok(encoded)
 }
 
-pub fn process_decode(opts: &Base64DecodeOpts) -> Result<Vec<u8>> {
+pub fn process_decode(opts: Base64DecodeOpts) -> Result<Vec<u8>> {
     let mut buf = Vec::new();
     read_input(&opts.input, &mut buf)?;
     // println!("\ninput: {:?}", String::from_utf8(buf.clone())?);

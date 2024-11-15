@@ -1,5 +1,8 @@
 use anyhow::Result;
 use clap::Parser;
+use zxcvbn::zxcvbn;
+
+use crate::process::gen_pass::process_genpass;
 
 use super::Processor;
 
@@ -23,7 +26,12 @@ pub struct GenPassOpts {
 }
 
 impl Processor for GenPassOpts {
-    fn process(&self) -> Result<()> {
-        todo!()
+    fn process(self) -> Result<()> {
+        let pwd = process_genpass(self)?;
+        println!("{}", pwd);
+
+        let estimate = zxcvbn(&pwd, &[]);
+        eprintln!("Password strength {}", estimate.score());
+        Ok(())
     }
 }

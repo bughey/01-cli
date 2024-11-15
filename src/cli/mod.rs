@@ -26,7 +26,7 @@ use crate::cli::text::TextVerifyOpts;
 
 #[enum_dispatch]
 pub trait Processor {
-    fn process(&self) -> Result<()>;
+    fn process(self) -> Result<()>;
 }
 
 #[derive(Parser, Debug)]

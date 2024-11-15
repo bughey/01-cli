@@ -72,19 +72,19 @@ impl Display for TextSignFormat {
 }
 
 impl Processor for TextSignOpts {
-    fn process(&self) -> Result<()> {
+    fn process(self) -> Result<()> {
         todo!()
     }
 }
 
 impl Processor for TextVerifyOpts {
-    fn process(&self) -> Result<()> {
+    fn process(self) -> Result<()> {
         todo!()
     }
 }
 
 impl Processor for TextKeyGenerateOpts {
-    fn process(&self) -> Result<()> {
+    fn process(self) -> Result<()> {
         todo!()
     }
 }
